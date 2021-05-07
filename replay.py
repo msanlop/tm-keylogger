@@ -30,19 +30,21 @@ async def play():
 async def pressKey(event):
     await asyncio.sleep(event.time)
     kController.press(event.key)
-    print(str(event.key) + " pressed")
     await asyncio.sleep(event.dt)
     kController.release(event.key)
-    print(str(event.key) + " released")
 
 def on_press(key):
+    print(key)
     if key == keyboard.Key.delete:
-        loop.run_until_complete(play())
+        # loop.run_until_complete(play())
+        return False
 
 with keyboard.Listener(
         on_press=on_press) as listener:
     listener.join()
 
 loop = asyncio.get_event_loop()
+
+loop.run_until_complete(play())
 
 

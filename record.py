@@ -7,8 +7,7 @@ import pickle
 keyTimes = {
 }
 keyEventDeque = deque()
-t0 = time.time()
-
+t0 = 0
 record = False
 
 
@@ -33,14 +32,13 @@ def on_release(key):
         dt = time.time() - keyTimes.get(key)
         keyEventDeque.append(KeyEvent(key, t1, dt))
         keyTimes.update({key:0})
-        print(t1)
         print('{0} released'.format(
             key))
         if key == keyboard.Key.esc:
             newDeque = sortDeque(keyEventDeque)
             for i in newDeque:
                 print(i)
-            pickle.dump(newDeque, open("test.p", "wb"))
+            pickle.dump(newDeque, open("sequence.p", "wb"))
             # Stop listener
             return False
     except Exception as e:
