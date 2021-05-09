@@ -6,7 +6,7 @@ import pickle
 
 keyTimes = {
 }
-keyEventDeque = deque()
+keyEventList = []
 t0 = 0
 record = False
 
@@ -16,29 +16,33 @@ def on_press(key):
     global t0
     try:
         if key == keyboard.Key.delete:
-            t0 = time.time()
+            t0 = time.perf_counter()
             record = True
-        elif keyTimes.get(key, 0) <= 0 and record:
-            keyTimes.update({key:time.time()})
+            keyEventList.append(KeyEvent(key, 0, 'p'))
+        elif keyTimes.get(key, True) and record:
+            keyTimes.update({key:False})
+            keyEventList.append(KeyEvent(key, time.perf_counter() - t0, 'p'))
+
     except Exception as e:
         print("error on press", e)
     
 
 def on_release(key):
+    global t0
     try:
         if not record:
             return
-        t1 = keyTimes.get(key) - t0
-        dt = time.time() - keyTimes.get(key)
-        keyEventDeque.append(KeyEvent(key, t1, dt))
-        keyTimes.update({key:0})
+        # t1 = keyTimes.get(key) - t0
+        # dt = time.time() - keyTimes.get(key)
+        keyEventList.append(KeyEvent(key, time.perf_counter() - t0, 'r'))
+        keyTimes.update({key:True})
         print('{0} released'.format(
             key))
         if key == keyboard.Key.esc:
-            newDeque = sortDeque(keyEventDeque)
-            for i in newDeque:
+            # newDeque = sortDeque(keyEventDeque)
+            for i in keyEventList:
                 print(i)
-            pickle.dump(newDeque, open("sequence.p", "wb"))
+            pickle.dump(keyEventList, open("sequence.p", "wb"))
             # Stop listener
             return False
     except Exception as e:
